@@ -1,0 +1,22 @@
+{
+  "name": "backend-mdy",
+  "version": "1.0.0",
+  "description": "Backend Aplicativos Municipalidad Distrital de Yura",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "author": "Informatica",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "nodemon": "^2.0.7",
+    "pdfmake": "^0.2.0",
+    "pg": "^8.6.0",
+    "sequelize": "^6.6.2"
+  }
+}
