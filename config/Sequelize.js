@@ -12,10 +12,17 @@ const mascotaComportamiento = require('../models/mascotas/MascotaComportamiento'
 const mascotaPropietario = require('../models/mascotas/MascotaPropietario');
 const personaModel = require('../models/Persona');
 
+// const conexion = new Sequelize(
+//     'municipio', 'postgres', 'root',
+//     {
+//         host: 'localhost',
+//         dialect: 'postgres',
+//         port: 5432
+//     }
+// );
 const conexion = new Sequelize(
-    'municipio', 'postgres', 'root',
-    {
-        host: 'localhost',
+    'municipio', 'mdy', 'qazWSX123456', {
+        host: '192.168.1.3',
         dialect: 'postgres',
         port: 5432
     }
