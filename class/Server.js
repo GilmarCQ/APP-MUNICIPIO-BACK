@@ -15,7 +15,7 @@ class Server {
     constructor() {
         this.app = express();
         this.app.use(cors());
-        this.puerto = process.env.PORT || 5000;
+        this.puerto = process.env.PORT || 5001;
         this.configurarParser();
         this.cargarRutas();
     }
