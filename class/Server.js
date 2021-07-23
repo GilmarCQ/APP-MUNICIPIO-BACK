@@ -5,6 +5,8 @@ const cors = require('cors');
 const {conexion} = require('../config/Sequelize');
 const {usuarioRouter} = require('../routes/Usuario');
 const { reniecRouter } = require('../routes/pide/Reniec');
+const { suneduRouter } = require('../routes/pide/Sunedu');
+const { mineduRouter } = require('../routes/pide/Minedu');
 const { tipoDocumentoRouter } = require('../routes/catalogos/TipoDocumento');
 const { asociacionRouter } = require('../routes/catalogos/Asociacion');
 const { comportamientoRouter } = require('../routes/catalogos/Comportamiento');
@@ -28,6 +30,8 @@ class Server {
             res.status(200).send('La api esta funcionando correctamente'));
         this.app.use('/usuario', usuarioRouter);
         this.app.use('/Reniec', reniecRouter);
+        this.app.use('/Sunedu', suneduRouter);
+        this.app.use('/Minedu', mineduRouter);
         this.app.use('/tipoDocumento', tipoDocumentoRouter);
         this.app.use('/asociacion', asociacionRouter);
         this.app.use('/comportamiento', comportamientoRouter);

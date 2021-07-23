@@ -2,6 +2,10 @@
 const httpError500 = (res, error) => {
     res.status(500).json(error);
 }
+const httpError400 = (res, error, mensaje) => {
+    res.status(400).json({
+        error, mensaje});
+}
 const httpOk200NoContent = (res, message) => {
     res.status(200).json({
         valido: true,
@@ -43,5 +47,6 @@ const httpNotFound404 = (res, message) => {
 }
 module.exports = {
     httpError500, httpCreated201, httpOk200NoContent,
-    httpOk200Content, httpBadRequest400, httpNotFound404
+    httpOk200Content, httpBadRequest400, httpNotFound404,
+    httpError400
 }

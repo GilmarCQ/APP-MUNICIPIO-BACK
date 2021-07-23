@@ -1,8 +1,8 @@
 const express = require('express');
-const reniec = require('../../controllers/pide/Reniec');
+const reniecController = require('../../controllers/pide/Reniec');
 const reniecRouter = express.Router();
 
-reniecRouter.get('/Consultar', reniec.consultaDni);
-reniecRouter.get('/ActualizarCredencial', reniec.actualizarCredencial);
+reniecRouter.get('/Consultar', reniecController.consultaDni);
+reniecRouter.get('/ActualizarCredencial', reniecController.actualizarCredencial);
 
 module.exports = { reniecRouter };

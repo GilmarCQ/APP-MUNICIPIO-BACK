@@ -86,3 +86,15 @@ INSERT INTO public.asociacion(id, nombre, "createdAt", "updatedAt")	VALUES (85, 
 INSERT INTO public.asociacion(id, nombre, "createdAt", "updatedAt")	VALUES (86, 'GRANJA NUEVA VIDA', now(), now());
 INSERT INTO public.asociacion(id, nombre, "createdAt", "updatedAt")	VALUES (87, 'APIMA', now(), now());
 INSERT INTO public.asociacion(id, nombre, "createdAt", "updatedAt")	VALUES (100, 'S/E', now(), now());
+
+INSERT INTO public."tipoDocumento"(	id, nombre, siglas, "createdAt", "updatedAt") VALUES
+	(1, 'DOCUMENTO NACIONAL DE IDENTIDAD', 'DNI', NOW(), NOW()),
+	(2, 'CARNET DE EXTRANJERIA', 'CE', NOW(), NOW());
+
+INSERT INTO public.comportamiento(id, nombre, "createdAt", "updatedAt") VALUES
+	(1, 'AGRESIVO', now(), now()),
+	(2, 'AMISTOSO', now(), now()),
+	(3, 'DISCAPACITADO', now(), now()),
+	(4, 'ENTRENADO', now(), now()),
+	(5, 'PELEADOR', now(), now()),
+	(6, 'MIEDOSO', now(), now());

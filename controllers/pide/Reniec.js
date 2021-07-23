@@ -8,7 +8,15 @@ const consultaDni = (req, res) => {
     const { nuDniConsulta, nuDniUsuario, nuRucUsuario, password } = req.query;
     axios
         .get(`${API_RENIEC}/Consultar`,
-        { params: { nuDniConsulta, nuDniUsuario, nuRucUsuario, password, out: 'json' }})
+        {
+            params: {
+                nuDniConsulta,
+                nuDniUsuario,
+                nuRucUsuario,
+                password,
+                out: 'json'
+            }
+        })
         .then(response => httpOk200Content(res, response.data, 'Consulta Realizada Correctamente.'))
         .catch(error => httpError500(res, error));
 }

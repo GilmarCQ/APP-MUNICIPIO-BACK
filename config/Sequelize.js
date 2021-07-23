@@ -12,21 +12,21 @@ const mascotaComportamiento = require('../models/mascotas/MascotaComportamiento'
 const mascotaPropietario = require('../models/mascotas/MascotaPropietario');
 const personaModel = require('../models/Persona');
 
-// const conexion = new Sequelize(
-//     'municipio', 'postgres', 'root',
-//     {
-//         host: 'localhost',
-//         dialect: 'postgres',
-//         port: 5432
-//     }
-// );
 const conexion = new Sequelize(
-    'municipio', 'mdy', 'qazWSX123456', {
-        host: '192.168.1.3',
+    'municipio', 'postgres', 'root',
+    {
+        host: 'localhost',
         dialect: 'postgres',
         port: 5432
     }
 );
+// const conexion = new Sequelize(
+//     'municipiopruebas', 'mdy', 'qazWSX123456', {
+//         host: '192.168.1.3',
+//         dialect: 'postgres',
+//         port: 5432
+//     }
+// );
 
 const Usuario = usuarioModel(conexion);
 const Pagina = paginaModel(conexion);
