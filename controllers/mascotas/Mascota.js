@@ -1,4 +1,5 @@
 const { Mascota, Persona, MascotaComportamiento, MascotaPropietario, Comportamiento, conexion } = require('../../config/Sequelize');
+const { crearObservacion, agregarObservacionMascota } = require('../Observacion');
 const {
     httpError500,
     httpOk200NoContent,
@@ -7,7 +8,6 @@ const {
     httpNotFound404,
     httpBadRequest400} = require('../../utils/httpMessages');
 const { obtenerPdfFichaRegistro } = require('./MascotaDocumento');
-
 const crearMascota = async (req, res) => {
     const { mascota, propietario, contacto, comportamientos } = req.body;
     const t = await conexion.transaction();
@@ -35,7 +35,6 @@ const crearMascota = async (req, res) => {
         await t.rollback();
     }
 };
-
 const findAddPropietario = async (persona) => {
     var persona;
     await Persona.findOne(
@@ -119,7 +118,85 @@ const getMascotasByRegistro = async (req, res) => {
             httpError500(res, error);
         });
 }
-
+const getMascotasByEstado = (req, res) => {
+    const { estado } = req.query;
+    console.log(estado);
+    Mascota.findAll({
+        where: { estadoRegistro: estado },
+        attributes: {
+            exclude: ['createdAt', 'updatedAt', 'deletedAt', 'foto']
+        }})
+        .then(mascotas => httpOk200Content(res, mascotas, 'Consulta Exitosa'))
+        .catch(error => httpError500(res, error));
+}
+const getMascotaById = (req, res) => {
+    const { id } = req.query;
+    Mascota.findOne({
+        where: { id },
+        include: {
+            model: Persona,
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'deletedAt', 'foto', 'propietarioMascota',
+                    'color', 'tamanio', 'sexo', 'raza', 'esterilizado', 'descripcion']}
+        },
+        attributes: {
+            exclude: ['createdAt', 'updatedAt', 'deletedAt']
+        }})
+        .then(mascota => {
+            console.log('mascota');
+            httpOk200Content(res, mascota, 'Consulta Exitosa')
+        })
+        .catch(error => httpError500(res, error))
+}
+const aprobarMascotaById = (req, res) => {
+    const {id} = req.body;
+    console.log('NUMERO DE ID',id);
+    Mascota.findByPk(id)
+        .then(mascota => {
+            if (mascota) {
+                mascota.estadoRegistro = 'APROBADO';
+                mascota.save()
+                    .then(mascotaAprobado => httpOk200NoContent(res, 'El registro se aprobo correctamente.'))
+                    .catch(error => httpError500(res, error));
+            } else {
+                httpNotFound404(res, `El registro con id ${id} no se encontro.`);
+            }
+        })
+        .catch(error => httpError500(res, error));
+}
+const observarMascotaById = async (req, res) => {
+    const { id, observaciones } = req.body;
+    const t = await conexion.transaction();
+    try {
+        Mascota
+            .findOne({where: { id }})
+            .then(async mascota => {
+                if (mascota) {
+                    for(let i = 0 ; i > observaciones.length ; i++) {
+                        const observacion = await crearObservacion(observaciones[i], res);
+                        await agregarObservacionMascota(id, observacion.id, t, res);
+                    }
+                    mascota.estadoRegistro = 'OBSERVADO';
+                    mascota.save()
+                        .then(async mascotaObservada => {
+                            await t.commit();
+                            httpOk200NoContent(res, 'El registro fu observado correctamente.');
+                        })
+                        .catch(async error => {
+                            await t.rollback();
+                            httpError500(res, error)
+                        });
+                }
+            })
+            .catch(async error => {
+                await t.rollback();
+                httpError500(res, error);
+            })
+    } catch (e) {
+        await t.rollback();
+    }
+    console.log(id, observaciones);
+}
 const buscarFichaRegistro = async (req, res) => {
     const { registro } = req.query;
     const respuesta = await buscarMascotaRegistro(res, registro);
@@ -155,7 +232,6 @@ const buscarMascotaRegistro = async (res, numeroRegistro) => {
         .catch(error => res.status(500).json(error));
     return respuesta;
 }
-
 const buscarComportamientosMascota = async (res, numeroRegistro) => {
     var comportamientos;
     await Mascota.findOne({
@@ -177,5 +253,6 @@ const buscarComportamientosMascota = async (res, numeroRegistro) => {
     return comportamientos;
 }
 module.exports = {
-    crearMascota, getMascotasByDocumento, getMascotasByRegistro, buscarFichaRegistro, convertirNumeroDigitos
+    crearMascota, getMascotasByDocumento, getMascotasByRegistro, getMascotaById, observarMascotaById,
+    buscarFichaRegistro, convertirNumeroDigitos, getMascotasByEstado, aprobarMascotaById
 }

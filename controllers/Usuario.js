@@ -35,14 +35,18 @@ const login = async (req, res) => {
 
 const tokenIsValid = (req, res, next) => {
     const {authorization} = req.headers;
-    console.log('123456789');
-    // console.log(req.headers);
-    console.log('TOKEN ',authorization);
-    try {
-        const data = jwt.verify(authorization, 'q@zWSX123456', { algorithm: 'RS256' });
-        next();
-    } catch (e) {
-        httpBadRequest400(res, 'El token de sesión es inválido, vuelva a iniciar sesión.')
+    if (authorization) {
+        jwt.verify(authorization, 'q@zWSX123456', { algorithm: 'RS256' },
+            (err, user) => {
+                if (err) {
+                    console.log(err);
+                    console.log('ERROR TOKEN');
+                    httpBadRequest400(res, 'El token de sesión es inválido, vuelva a iniciar sesión.');
+                }
+                next();
+            });
+    } else {
+        httpBadRequest400(res, 'El token de sesión es inválido, vuelva a iniciar sesión.');
     }
 }
 
@@ -52,7 +56,7 @@ const tokenIsValid = (req, res, next) => {
  * @param res
  */
 const createUser = async (req, res) => {
-    const { user } = req.body;
+    const user = req.body;
     if (await isDuplicateUser(user.usuario, res))
         httpBadRequest400(res, 'El usuario ya existe, ingrese otro nombre de usuario.');
     const userBuild = Usuario.build(user);

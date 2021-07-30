@@ -7,9 +7,11 @@ const usuarioModuloModel = require('../models/usuarioModulo');
 const tipoDocumentoModel = require('../models/catalogos/TipoDocumento');
 const asociacionModel = require('../models/catalogos/Asociacion');
 const comportamientoModel = require('../models/catalogos/Comportamiento');
+const observacionModel = require('../models/Observacion');
 const mascotaModel = require('../models/mascotas/Mascota');
 const mascotaComportamiento = require('../models/mascotas/MascotaComportamiento');
 const mascotaPropietario = require('../models/mascotas/MascotaPropietario');
+const mascotaObservacion = require('../models/mascotas/MascotaObservacion');
 const personaModel = require('../models/Persona');
 
 // const conexion = new Sequelize(
@@ -37,10 +39,12 @@ const UsuarioModulo = usuarioModuloModel(conexion);
 const TipoDocumento = tipoDocumentoModel(conexion);
 const Asociacion = asociacionModel(conexion);
 const Comportamiento = comportamientoModel(conexion);
+const Observacion = observacionModel(conexion);
 const Mascota = mascotaModel(conexion);
 const Persona = personaModel(conexion);
 const MascotaComportamiento = mascotaComportamiento(conexion);
 const MascotaPropietario = mascotaPropietario(conexion);
+const MascotaObservacion = mascotaObservacion(conexion);
 
 
 Pagina.belongsTo(Modulo);
@@ -53,8 +57,10 @@ Mascota.belongsToMany(Comportamiento, {through: MascotaComportamiento, foreignKe
 Comportamiento.belongsToMany(Mascota, {through: MascotaComportamiento, foreignKey: 'comportamientoId'});
 Mascota.belongsToMany(Persona, {through: MascotaPropietario, foreignKey: 'mascotaId'});
 Persona.belongsToMany(Mascota, {through: MascotaPropietario, foreignKey: 'personaId'});
+Mascota.belongsToMany(Observacion, {through: MascotaObservacion, foreignKey: 'mascotaId'});
+Observacion.belongsToMany(Mascota, {through: MascotaObservacion, foreignKey: 'observacionId'});
 
 module.exports = {
     conexion, Usuario, Pagina, Modulo, UsuarioModulo, UsuarioPagina, TipoDocumento, Asociacion, Comportamiento, Mascota,
-    Persona, MascotaComportamiento, MascotaPropietario
+    Persona, MascotaComportamiento, MascotaPropietario, MascotaObservacion
 }

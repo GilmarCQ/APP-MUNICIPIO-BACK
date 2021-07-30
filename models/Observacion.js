@@ -7,25 +7,21 @@ const observacion_model = conexion => {
                 primaryKey: true,
                 timestamps: true,
                 type: sequelize.INTEGER,
-                allowNull: true
-            },
+                allowNull: true },
             asunto: {
                 type: sequelize.TEXT,
-                allowNull: false
-            },
+                allowNull: false },
             descripcion: {
                 type: sequelize.TEXT,
-                allowNull: false
-            },
+                allowNull: false },
             fechaEmision: {
                 type: sequelize.DATE,
-                allowNull: false
-            },
+                allowNull: false,
+                defaultValue: sequelize.NOW },
             estadoSubsanacion: {
                 type: sequelize.TEXT,
                 allowNull: false,
-                defaultValue: 'POR SUBSANAR'
-            }
+                defaultValue: 'POR SUBSANAR' }
         },
         {
             tableName: 'observacion',

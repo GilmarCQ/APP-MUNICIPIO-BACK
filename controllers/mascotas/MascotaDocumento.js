@@ -211,6 +211,7 @@ const obtenerPdfFichaRegistro = async (res, respuesta, numeroRegistro, comportam
                 }
             }
         };
+
         const printer = new PdfPrinter(fonts);
         let pdfDoc = printer.createPdfKitDocument(docDefinition);
         var chunks = []
