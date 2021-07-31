@@ -14,21 +14,21 @@ const mascotaPropietario = require('../models/mascotas/MascotaPropietario');
 const mascotaObservacion = require('../models/mascotas/MascotaObservacion');
 const personaModel = require('../models/Persona');
 
-// const conexion = new Sequelize(
-//     'municipio', 'postgres', 'root',
-//     {
-//         host: 'localhost',
-//         dialect: 'postgres',
-//         port: 5432
-//     }
-// );
 const conexion = new Sequelize(
-    'municipiopruebas', 'mdy', 'qazWSX123456', {
-        host: '192.168.1.3',
+    'municipio', 'postgres', 'root',
+    {
+        host: 'localhost',
         dialect: 'postgres',
         port: 5432
     }
 );
+// const conexion = new Sequelize(
+//     'municipiopruebas', 'mdy', 'qazWSX123456', {
+//         host: '192.168.1.3',
+//         dialect: 'postgres',
+//         port: 5432
+//     }
+// );
 
 const Usuario = usuarioModel(conexion);
 const Pagina = paginaModel(conexion);
@@ -57,10 +57,10 @@ Mascota.belongsToMany(Comportamiento, {through: MascotaComportamiento, foreignKe
 Comportamiento.belongsToMany(Mascota, {through: MascotaComportamiento, foreignKey: 'comportamientoId'});
 Mascota.belongsToMany(Persona, {through: MascotaPropietario, foreignKey: 'mascotaId'});
 Persona.belongsToMany(Mascota, {through: MascotaPropietario, foreignKey: 'personaId'});
-Mascota.belongsToMany(Observacion, {through: MascotaObservacion, foreignKey: 'mascotaId'});
+Mascota.belongsToMany(Observacion, {through: MascotaObservacion, foreignKey: 'mascotaId', as: 'observaciones'});
 Observacion.belongsToMany(Mascota, {through: MascotaObservacion, foreignKey: 'observacionId'});
 
 module.exports = {
     conexion, Usuario, Pagina, Modulo, UsuarioModulo, UsuarioPagina, TipoDocumento, Asociacion, Comportamiento, Mascota,
-    Persona, MascotaComportamiento, MascotaPropietario, MascotaObservacion
+    Persona, MascotaComportamiento, MascotaPropietario, MascotaObservacion, Observacion
 }

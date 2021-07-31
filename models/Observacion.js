@@ -5,7 +5,7 @@ const observacion_model = conexion => {
         {
             id: {
                 primaryKey: true,
-                timestamps: true,
+                autoIncrement: true,
                 type: sequelize.INTEGER,
                 allowNull: true },
             asunto: {

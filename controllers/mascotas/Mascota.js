@@ -1,4 +1,5 @@
-const { Mascota, Persona, MascotaComportamiento, MascotaPropietario, Comportamiento, conexion } = require('../../config/Sequelize');
+const { Mascota, Persona, MascotaComportamiento, MascotaPropietario, Comportamiento,
+    Observacion, conexion } = require('../../config/Sequelize');
 const { crearObservacion, agregarObservacionMascota } = require('../Observacion');
 const {
     httpError500,
@@ -131,22 +132,34 @@ const getMascotasByEstado = (req, res) => {
 }
 const getMascotaById = (req, res) => {
     const { id } = req.query;
-    Mascota.findOne({
-        where: { id },
-        include: {
-            model: Persona,
+    Mascota
+        .findOne({
+            where: { id },
+            include: [
+                {
+                    model: Persona,
+                    attributes: {
+                        exclude: ['createdAt', 'updatedAt', 'deletedAt', 'foto', 'propietarioMascota',
+                            'color', 'tamanio', 'sexo', 'raza', 'esterilizado', 'descripcion']}
+                },
+                {
+                    model: Observacion,
+                    as: 'observaciones',
+                    attributes: {
+                        exclude: ['createdAt', 'updatedAt', 'deletedAt']
+                    }
+                }
+            ],
             attributes: {
-                exclude: ['createdAt', 'updatedAt', 'deletedAt', 'foto', 'propietarioMascota',
-                    'color', 'tamanio', 'sexo', 'raza', 'esterilizado', 'descripcion']}
-        },
-        attributes: {
-            exclude: ['createdAt', 'updatedAt', 'deletedAt']
-        }})
+                exclude: ['createdAt', 'updatedAt', 'deletedAt']
+            }})
         .then(mascota => {
-            console.log('mascota');
             httpOk200Content(res, mascota, 'Consulta Exitosa')
         })
-        .catch(error => httpError500(res, error))
+        .catch(error => {
+            console.log(error);
+            httpError500(res, error);
+        })
 }
 const aprobarMascotaById = (req, res) => {
     const {id} = req.body;
@@ -168,30 +181,29 @@ const observarMascotaById = async (req, res) => {
     const { id, observaciones } = req.body;
     const t = await conexion.transaction();
     try {
-        Mascota
+        const mascota = await Mascota
             .findOne({where: { id }})
-            .then(async mascota => {
-                if (mascota) {
-                    for(let i = 0 ; i > observaciones.length ; i++) {
-                        const observacion = await crearObservacion(observaciones[i], res);
-                        await agregarObservacionMascota(id, observacion.id, t, res);
-                    }
-                    mascota.estadoRegistro = 'OBSERVADO';
-                    mascota.save()
-                        .then(async mascotaObservada => {
-                            await t.commit();
-                            httpOk200NoContent(res, 'El registro fu observado correctamente.');
-                        })
-                        .catch(async error => {
-                            await t.rollback();
-                            httpError500(res, error)
-                        });
-                }
-            })
+            .then(async mascota => mascota)
             .catch(async error => {
                 await t.rollback();
                 httpError500(res, error);
             })
+        if (mascota) {
+            for(let i = 0 ; i < observaciones.length ; i++) {
+                const observacion = await crearObservacion(observaciones[i], res);
+                await agregarObservacionMascota(id, observacion.id, t, res);
+            }
+            mascota.estadoRegistro = 'OBSERVADO';
+            mascota.save()
+                .then(async mascotaObservada => {
+                    await t.commit();
+                    httpOk200NoContent(res, 'El registro fue observado correctamente.');
+                })
+                .catch(async error => {
+                    await t.rollback();
+                    httpError500(res, error)
+                });
+        }
     } catch (e) {
         await t.rollback();
     }
