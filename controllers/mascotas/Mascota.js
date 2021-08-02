@@ -121,7 +121,6 @@ const getMascotasByRegistro = async (req, res) => {
 }
 const getMascotasByEstado = (req, res) => {
     const { estado } = req.query;
-    console.log(estado);
     Mascota.findAll({
         where: { estadoRegistro: estado },
         attributes: {
@@ -264,6 +263,7 @@ const buscarComportamientosMascota = async (res, numeroRegistro) => {
         .catch(error => res.status(500).json(error))
     return comportamientos;
 }
+
 module.exports = {
     crearMascota, getMascotasByDocumento, getMascotasByRegistro, getMascotaById, observarMascotaById,
     buscarFichaRegistro, convertirNumeroDigitos, getMascotasByEstado, aprobarMascotaById
