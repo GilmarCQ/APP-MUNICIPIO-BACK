@@ -14,8 +14,16 @@ const mascotaPropietario = require('../models/mascotas/MascotaPropietario');
 const mascotaObservacion = require('../models/mascotas/MascotaObservacion');
 const personaModel = require('../models/Persona');
 
+const autorModel = require('../models/biblioteca/Autor');
+const editorialModel = require('../models/biblioteca/Editorial');
+const generoModel = require('../models/biblioteca/Genero');
+const libroModel = require('../models/biblioteca/Libro');
+const libroBibliotecaModel = require('../models/biblioteca/LibroBiblioteca');
+const libroAutorModel = require('../models/biblioteca/LibroAutor');
+const libroGeneroModel = require('../models/biblioteca/LibroGenero');
+
 // const conexion = new Sequelize(
-//     'municipio', 'postgres', 'root',
+//     'municipio-test', 'postgres', 'root',
 //     {
 //         host: 'localhost',
 //         dialect: 'postgres',
@@ -45,6 +53,13 @@ const Persona = personaModel(conexion);
 const MascotaComportamiento = mascotaComportamiento(conexion);
 const MascotaPropietario = mascotaPropietario(conexion);
 const MascotaObservacion = mascotaObservacion(conexion);
+const Editorial = editorialModel(conexion);
+const Autor = autorModel(conexion);
+const Genero = generoModel(conexion);
+const Libro = libroModel(conexion);
+const LibroBiblioteca = libroBibliotecaModel(conexion);
+const LibroAutor = libroAutorModel(conexion);
+const LibroGenero = libroGeneroModel(conexion);
 
 
 Pagina.belongsTo(Modulo);
@@ -59,8 +74,17 @@ Mascota.belongsToMany(Persona, {through: MascotaPropietario, foreignKey: 'mascot
 Persona.belongsToMany(Mascota, {through: MascotaPropietario, foreignKey: 'personaId'});
 Mascota.belongsToMany(Observacion, {through: MascotaObservacion, foreignKey: 'mascotaId', as: 'observaciones'});
 Observacion.belongsToMany(Mascota, {through: MascotaObservacion, foreignKey: 'observacionId'});
+Libro.hasMany(LibroBiblioteca, { foreignKey: 'libroId' });
+Editorial.hasOne(Libro, { foreignKey: 'editorialId' });
+Libro.belongsToMany(Autor, { through: LibroAutor, foreignKey: 'libroId' });
+Autor.belongsToMany(Libro, { through: LibroAutor, foreignKey: 'autorId' });
+Libro.belongsToMany(Genero,  { through: LibroGenero});
+Genero.belongsToMany(Libro,  { through: LibroGenero});
+
+
 
 module.exports = {
     conexion, Usuario, Pagina, Modulo, UsuarioModulo, UsuarioPagina, TipoDocumento, Asociacion, Comportamiento, Mascota,
-    Persona, MascotaComportamiento, MascotaPropietario, MascotaObservacion, Observacion
+    Persona, MascotaComportamiento, MascotaPropietario, MascotaObservacion, Observacion, Autor, Editorial, Genero,
+    Libro, LibroBiblioteca, LibroAutor, LibroGenero
 }

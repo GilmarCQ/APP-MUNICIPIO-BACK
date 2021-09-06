@@ -2,16 +2,21 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const {conexion} = require('../config/Sequelize');
-const {usuarioRouter} = require('../routes/Usuario');
+const { conexion } = require('../config/Sequelize');
+const { usuarioRouter } = require('../routes/Usuario');
 const { reniecRouter } = require('../routes/pide/Reniec');
 const { suneduRouter } = require('../routes/pide/Sunedu');
 const { mineduRouter } = require('../routes/pide/Minedu');
+const { sunarpRouter } = require('../routes/pide/Sunarp');
 const { tipoDocumentoRouter } = require('../routes/catalogos/TipoDocumento');
 const { asociacionRouter } = require('../routes/catalogos/Asociacion');
 const { comportamientoRouter } = require('../routes/catalogos/Comportamiento');
 const { catalogoRouter } = require('../routes/catalogos/Catalogos');
 const { mascotaRouter } = require('../routes/mascotas/Mascota');
+const { editorialRouter } = require('../routes/biblioteca/Editorial');
+const { generoRouter } = require('../routes/biblioteca/Genero');
+const { autorRouter } = require('../routes/biblioteca/Autor');
+const { libroRouter } = require('../routes/biblioteca/Libro');
 
 class Server {
     constructor() {
@@ -32,11 +37,16 @@ class Server {
         this.app.use('/Reniec', reniecRouter);
         this.app.use('/Sunedu', suneduRouter);
         this.app.use('/Minedu', mineduRouter);
+        this.app.use('/Sunarp', sunarpRouter);
         this.app.use('/tipoDocumento', tipoDocumentoRouter);
         this.app.use('/asociacion', asociacionRouter);
         this.app.use('/comportamiento', comportamientoRouter);
         this.app.use('/catalogo', catalogoRouter);
         this.app.use('/mascota', mascotaRouter);
+        this.app.use('/editorial', editorialRouter);
+        this.app.use('/genero', generoRouter);
+        this.app.use('/autor', autorRouter);
+        this.app.use('/libro', libroRouter);
     }
     start() {
         this.app.listen(this.puerto, () => console.log(`Todo operativo en el puerto ${this.puerto}`));

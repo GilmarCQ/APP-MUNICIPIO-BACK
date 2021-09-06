@@ -1,7 +1,7 @@
 const sequelize = require('sequelize');
 
-const editorial_model = (conexion) => {
-    return conexion.define('editorial',
+const sala_model = (conexion) => {
+    return conexion.define('sala',
         {
             id: {
                 primaryKey: true,
@@ -10,12 +10,16 @@ const editorial_model = (conexion) => {
                 allowNull: false },
             nombre: {
                 type: sequelize.TEXT,
+                allowNull: false },
+            descripcion: {
+                type: sequelize.TEXT,
                 allowNull: false }
         },
         {
-            timestamps: true,
+            tableName: 'sala',
             paranoid: true,
-            tableName: 'editorial'
-        });
+            timestamps: true
+        })
 }
-module.exports = editorial_model;
+
+module.exports = sala_model;

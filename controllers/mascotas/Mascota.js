@@ -162,7 +162,6 @@ const getMascotaById = (req, res) => {
 }
 const aprobarMascotaById = (req, res) => {
     const {id} = req.body;
-    console.log('NUMERO DE ID',id);
     Mascota.findByPk(id)
         .then(mascota => {
             if (mascota) {
@@ -200,13 +199,14 @@ const observarMascotaById = async (req, res) => {
                 })
                 .catch(async error => {
                     await t.rollback();
-                    httpError500(res, error)
+                    httpError500(res, error);
                 });
         }
     } catch (e) {
         await t.rollback();
+        httpError500(res, error);
     }
-    console.log(id, observaciones);
+    // console.log(id, observaciones);
 }
 const buscarFichaRegistro = async (req, res) => {
     const { registro } = req.query;

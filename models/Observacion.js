@@ -7,7 +7,7 @@ const observacion_model = conexion => {
                 primaryKey: true,
                 autoIncrement: true,
                 type: sequelize.INTEGER,
-                allowNull: true },
+                allowNull: false },
             asunto: {
                 type: sequelize.TEXT,
                 allowNull: false },

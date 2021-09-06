@@ -7,7 +7,7 @@ const mascota_model = conexion => {
                 primaryKey: true,
                 autoIncrement: true,
                 type: sequelize.INTEGER,
-                allowNull: true },
+                allowNull: false },
             nombre: {
                 type: sequelize.TEXT,
                 allowNull: false },

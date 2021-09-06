@@ -1,5 +1,4 @@
 const sequelize = require('sequelize');
-
 const mascotaComportamiento_model = (conexion) => {
     return conexion.define('mascotaComportamiento',
         {

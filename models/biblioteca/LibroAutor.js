@@ -1,18 +1,18 @@
 const sequelize = require('sequelize');
-const libroGenero_model = (conexion) => {
-    return conexion.define('libroGenere',
+
+const libroAutor_model = (conexion) => {
+    return conexion.define('libroAutor',
         {
             id: {
                 primaryKey: true,
                 autoIncrement: true,
                 type: sequelize.INTEGER,
-                allowNull: false
-            }
+                allowNull: false }
         },
         {
-            tableName: 'libroGenero',
+            tableName: 'libroAutor',
             timestamps: true,
             paranoid: true
-        })
+        });
 }
-module.exports = libroGenero_model;
+module.exports = libroAutor_model;

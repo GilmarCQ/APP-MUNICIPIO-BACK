@@ -1,21 +1,25 @@
 const sequelize = require('sequelize');
 
-const editorial_model = (conexion) => {
-    return conexion.define('editorial',
+const biblioteca_model = conexion => {
+    return conexion.define('biblioteca',
         {
             id: {
                 primaryKey: true,
                 autoIncrement: true,
                 type: sequelize.INTEGER,
-                allowNull: false },
+                allowNull: false
+            },
             nombre: {
+                type: sequelize.TEXT,
+                allowNull: false },
+            direccion: {
                 type: sequelize.TEXT,
                 allowNull: false }
         },
         {
-            timestamps: true,
+            tableName: 'biblioteca',
             paranoid: true,
-            tableName: 'editorial'
+            timestamps: true
         });
-}
-module.exports = editorial_model;
+};
+module.exports = biblioteca_model;

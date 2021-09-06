@@ -1,6 +1,7 @@
 const sequelize = require('sequelize');
-const libroGenero_model = (conexion) => {
-    return conexion.define('libroGenere',
+
+const salaReserva_model = (conexion) => {
+    return conexion.define('salaReserva',
         {
             id: {
                 primaryKey: true,
@@ -10,9 +11,9 @@ const libroGenero_model = (conexion) => {
             }
         },
         {
-            tableName: 'libroGenero',
-            timestamps: true,
-            paranoid: true
-        })
+            tableName: 'salaReserva',
+            paranoid: true,
+            timestamps: true
+        });
 }
-module.exports = libroGenero_model;
+module.exports = salaReserva_model;

@@ -1,6 +1,6 @@
 
 const httpError500 = (res, error) => {
-    res.status(500).json(error);
+    res.status(500).json({error});
 }
 const httpError400 = (res, error, mensaje) => {
     res.status(400).json({
