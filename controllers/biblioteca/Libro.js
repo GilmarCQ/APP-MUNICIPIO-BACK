@@ -9,7 +9,6 @@ const {
 
 const crearLibro = async (req, res) => {
     let libro = req.body;
-    // console.log(libro);
     const t = await conexion.transaction();
     try {
         const libroFinded = await findLibroByTitulo(libro.titulo.toUpperCase());
@@ -21,10 +20,8 @@ const crearLibro = async (req, res) => {
                 httpBadRequest400(res, 'Editorial ingresada no fue encontrado...');
             }
             libro.editorialId = editorialFinded.id;
-            // const libroCreated = await
             addLibro(libro, libro.editorialId, t)
                 .then(async libroCreated => {
-                    console.log(libroCreated);
                     for (let i = 0; i < libro.generos.length ; i++) {
                         addLibroGeneroLiterario(libroCreated.id, libro.generos[i].id);
                     }

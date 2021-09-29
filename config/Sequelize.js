@@ -1,4 +1,12 @@
 const Sequelize = require('sequelize');
+
+const entidadModel = require('../models/entidad/Entidad');
+const sedeModel = require('../models/entidad/Sede');
+const areaModel = require('../models/entidad/Area');
+const areaJerarquia = require('../models/entidad/AreaJerarquia');
+const funcionarioModel = require('../models/entidad/Funcionario');
+const areaFuncionarioModel = require('../models/entidad/AreaFuncionario');
+
 const usuarioModel = require('../models/Usuario');
 const paginaModel = require('../models/Pagina');
 const moduloModel = require('../models/Modulo');
@@ -22,21 +30,39 @@ const libroBibliotecaModel = require('../models/biblioteca/LibroBiblioteca');
 const libroAutorModel = require('../models/biblioteca/LibroAutor');
 const libroGeneroModel = require('../models/biblioteca/LibroGenero');
 
+const visitaModel = require('../models/visitas/Visita');
+const visitanteModel = require('../models/visitas/Visitante');
+
+
 // const conexion = new Sequelize(
-//     'municipio-test', 'postgres', 'root',
+//     'municipio', 'postgres', 'root',
 //     {
 //         host: 'localhost',
 //         dialect: 'postgres',
 //         port: 5432
 //     }
 // );
+// const conexion = new Sequelize(
+//     'municipiopruebas', 'mdy', 'qazWSX123456', {
+//         host: '192.168.1.3',
+//         dialect: 'postgres',
+//         port: 5432
+//     }
+// );
 const conexion = new Sequelize(
-    'municipiopruebas', 'mdy', 'qazWSX123456', {
+    'municipio', 'mdy', 'qazWSX123456', {
         host: '192.168.1.3',
         dialect: 'postgres',
         port: 5432
     }
 );
+
+const Entidad = entidadModel(conexion);
+const Sede = sedeModel(conexion);
+const Area = areaModel(conexion);
+const Funcionario = funcionarioModel(conexion);
+const AreaFuncionario = areaFuncionarioModel(conexion);
+const AreaJerarquia = areaJerarquia(conexion);
 
 const Usuario = usuarioModel(conexion);
 const Pagina = paginaModel(conexion);
@@ -60,8 +86,10 @@ const Libro = libroModel(conexion);
 const LibroBiblioteca = libroBibliotecaModel(conexion);
 const LibroAutor = libroAutorModel(conexion);
 const LibroGenero = libroGeneroModel(conexion);
+const Visita = visitaModel(conexion);
+const Visitante = visitanteModel(conexion);
 
-
+// Definicion de Relaciones entre tablas
 Pagina.belongsTo(Modulo);
 Modulo.hasMany(Pagina);
 Usuario.belongsToMany(Modulo, {through: UsuarioModulo});
@@ -80,11 +108,25 @@ Libro.belongsToMany(Autor, { through: LibroAutor, foreignKey: 'libroId' });
 Autor.belongsToMany(Libro, { through: LibroAutor, foreignKey: 'autorId' });
 Libro.belongsToMany(Genero,  { through: LibroGenero});
 Genero.belongsToMany(Libro,  { through: LibroGenero});
-
-
+Entidad.hasMany(Sede);
+Visita.belongsTo(Visitante);
+Visitante.hasOne(Visita);
+Visita.belongsTo(Sede);
+Visita.belongsTo(AreaFuncionario);
+Visitante.belongsTo(Persona);
+Persona.hasOne(Visitante);
+Funcionario.belongsTo(Persona, { foreignKey: 'personaId' });
+Area.belongsToMany(Funcionario, { through: AreaFuncionario, foreignKey: 'areaId'});
+Funcionario.belongsToMany(Area, { through: AreaFuncionario, foreignKey: 'funcionarioId'});
+Funcionario.hasMany(AreaFuncionario);
+AreaFuncionario.belongsTo(Funcionario);
+Area.hasMany(AreaFuncionario);
+AreaFuncionario.belongsTo(Area);
+Area.hasOne(AreaJerarquia, { foreignKey: 'areaBaseId' });
+Area.hasOne(AreaJerarquia, { foreignKey: 'areaSuperiorId' });
 
 module.exports = {
     conexion, Usuario, Pagina, Modulo, UsuarioModulo, UsuarioPagina, TipoDocumento, Asociacion, Comportamiento, Mascota,
     Persona, MascotaComportamiento, MascotaPropietario, MascotaObservacion, Observacion, Autor, Editorial, Genero,
-    Libro, LibroBiblioteca, LibroAutor, LibroGenero
+    Libro, LibroBiblioteca, LibroAutor, LibroGenero, Area, Funcionario, AreaFuncionario, AreaJerarquia, Visita, Visitante
 }

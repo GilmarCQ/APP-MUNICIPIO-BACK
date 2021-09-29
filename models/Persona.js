@@ -23,9 +23,7 @@ const persona_model = (conexion) => {
             apellidoMaterno: {
                 type: sequelize.TEXT,
                 allowNull: false },
-            direccion: {
-                type: sequelize.TEXT,
-                allowNull: false },
+            direccion: { type: sequelize.TEXT },
             direccionAlternativa: { type: sequelize.TEXT },
             correo: { type: sequelize.TEXT },
             telefono: { type: sequelize.CHAR(10) },

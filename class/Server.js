@@ -17,6 +17,10 @@ const { editorialRouter } = require('../routes/biblioteca/Editorial');
 const { generoRouter } = require('../routes/biblioteca/Genero');
 const { autorRouter } = require('../routes/biblioteca/Autor');
 const { libroRouter } = require('../routes/biblioteca/Libro');
+const { funcionarioRouter } = require('../routes/entidad/Funcionario');
+const { areaRouter } = require('../routes/entidad/Area');
+const { areaFuncionarioRouter } = require('../routes/entidad/AreaFuncionario');
+const { visitaRouter } = require('../routes/transparencia/Visita');
 
 class Server {
     constructor() {
@@ -47,10 +51,14 @@ class Server {
         this.app.use('/genero', generoRouter);
         this.app.use('/autor', autorRouter);
         this.app.use('/libro', libroRouter);
+        this.app.use('/funcionario', funcionarioRouter);
+        this.app.use('/area', areaRouter);
+        this.app.use('/cargoFuncionario', areaFuncionarioRouter);
+        this.app.use('/visitas', visitaRouter);
     }
     start() {
         this.app.listen(this.puerto, () => console.log(`Todo operativo en el puerto ${this.puerto}`));
-        conexion.sync({alter: true, force: false}).then(() => console.log('Base de datos sincronizada.'))
+        conexion.sync({alter: false, force: false}).then(() => console.log('Base de datos sincronizada.'))
     }
 }
 module.exports = Server;
