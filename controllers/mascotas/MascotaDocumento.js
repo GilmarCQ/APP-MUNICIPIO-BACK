@@ -82,31 +82,31 @@ const obtenerPdfFichaRegistro = async (res, respuesta, numeroRegistro, comportam
                                 { text: `Correo Electrónico:  ${propietario.correo}`, colSpan: 2, style: 'tableContent' }],
                             [
                                 { text: `Dirección: ${propietario.direccion}`, colSpan: 2, style: 'tableContent' }],
-                            [
-                                { text: 'DATOS DE CONTACTO DE EMERGENCIA', colSpan: 2, alignment: 'center', style: 'tableHeader' }, {}],
-
-                            [
-                                {
-                                    text: `Apellidos y Nombres:   ${contacto.apellidoPaterno.toUpperCase()} `
-                                        + `${contacto.apellidoMaterno.toUpperCase()} ${contacto.nombres.toUpperCase()}`, colSpan: 2, style: 'tableContent'
-                                }],
-                            [
-                                { text: `${contacto.tipoDocumento}:  ${contacto.numeroDocumento}`, style: 'tableContent' },
-                                { text: `Edad: ${propietario.edad} `, style: 'tableContent' }],
-                            [
-                                { text: `Sexo:    ${contacto.genero}`, style: 'tableContent' },
-                                { text: `Teléfono / Celular:  ${contacto.telefono}`, style: 'tableContent' }],
-                            [
-                                { text: `Correo Electrónico:  ${contacto.correo}`, colSpan: 2, style: 'tableContent' }],
-                            [
-                                { text: `Dirección: ${contacto.direccion}`, colSpan: 2, style: 'tableContent' }],
+                            // [
+                            //     { text: 'DATOS DE CONTACTO DE EMERGENCIA', colSpan: 2, alignment: 'center', style: 'tableHeader' }, {}],
+                            //
+                            // [
+                            //     {
+                            //         text: `Apellidos y Nombres:   ${contacto.apellidoPaterno.toUpperCase()} `
+                            //             + `${contacto.apellidoMaterno.toUpperCase()} ${contacto.nombres.toUpperCase()}`, colSpan: 2, style: 'tableContent'
+                            //     }],
+                            // [
+                            //     { text: `${contacto.tipoDocumento}:  ${contacto.numeroDocumento}`, style: 'tableContent' },
+                            //     { text: `Edad: ${propietario.edad} `, style: 'tableContent' }],
+                            // [
+                            //     { text: `Sexo:    ${contacto.genero}`, style: 'tableContent' },
+                            //     { text: `Teléfono / Celular:  ${contacto.telefono}`, style: 'tableContent' }],
+                            // [
+                            //     { text: `Correo Electrónico:  ${contacto.correo}`, colSpan: 2, style: 'tableContent' }],
+                            // [
+                            //     { text: `Dirección: ${contacto.direccion}`, colSpan: 2, style: 'tableContent' }],
 
                             [
                                 { text: 'DATOS DEL CAN', colSpan: 2, alignment: 'center', style: 'tableHeader' }, {}],
                             [
                                 { text: `Nombre del Can:    ${respuesta.nombre}`, colSpan: 2, style: 'tableContent' }],
                             [
-                                { text: `Edad: ${mascota.edad}, meses`, style: 'tableContent' },
+                                { text: `Edad: ${mascota.edad}, meses`, style: '    tableContent' },
                                 { text: `Sexo: ${mascota.genero}`, style: 'tableContent' }],
                             [
                                 { text: `Color: ${mascota.color.toUpperCase()}`, style: 'tableContent' },
@@ -151,8 +151,8 @@ const obtenerPdfFichaRegistro = async (res, respuesta, numeroRegistro, comportam
                                 {}
                             ],
                             [
-                                { text: `__________________________________\nNombre del Propietario\nDNI`, alignment: 'center', style: 'tableFirma' },
-                                { text: `__________________________________\nNombre del Registrador`, alignment: 'center', style: 'tableFirma' }
+                                { text: `__________________________________\nFirma del Propietario`, alignment: 'center', style: 'tableFirma' },
+                                { text: `__________________________________\nFirma del Registrador`, alignment: 'center', style: 'tableFirma' }
                             ]
                         ]
                     },

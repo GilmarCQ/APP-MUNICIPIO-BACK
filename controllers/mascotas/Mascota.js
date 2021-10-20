@@ -9,27 +9,27 @@ const {
     httpNotFound404,
     httpBadRequest400} = require('../../utils/httpMessages');
 const { obtenerPdfFichaRegistro } = require('./MascotaDocumento');
+const {REGISTRO_ACTUALIZADO, REGISTRO_NO_ENCONTRADO} = require("../../utils/apiMessages");
 const crearMascota = async (req, res) => {
-    const { mascota, propietario, contacto, comportamientos } = req.body;
+    const { mascota, propietario, comportamientos } = req.body;
     const t = await conexion.transaction();
     try {
-        mascota.registro = await getNumeroRegistro(res) + 1;
+        // mascota.registro = await getNumeroRegistro(res) + 1;
         const personaCreated = await findAddPropietario(propietario);
-        const contactoCreated = await findAddPropietario(contacto);
+        // const contactoCreated = await findAddPropietario(contacto);
         // const personaCreated = await Persona.build(propietario).save({transaction: t});
         // const contactoCreated = await Persona.build(contacto).save({transaction: t});
         const mascotaCreated = await Mascota.build(mascota).save({transaction: t});
 
         await agregarPropietario('P', mascotaCreated.id, personaCreated.id, t);
-        await agregarPropietario('C', mascotaCreated.id, contactoCreated.id, t);
+        // await agregarPropietario('C', mascotaCreated.id, contactoCreated.id, t);
 
         for (let i=0 ; i < comportamientos.length ; i++) {
             const comportamientoMascotaCreated = setComportamientoMascota(res, mascotaCreated.id, comportamientos[i].id);
         }
         await t.commit();
         httpCreated201(res, mascotaCreated,
-            'La mascota fue agregada correctamente, con número de registro ' +
-            formatearDigitos(mascotaCreated.registro, 8));
+            'La mascota fue agregada correctamente');
     } catch (e) {
         console.log(e);
         httpError500(res, e);
@@ -39,7 +39,7 @@ const crearMascota = async (req, res) => {
 const findAddPropietario = async (persona) => {
     var persona;
     await Persona.findOne(
-        { where: { tipoDocumento: persona.tipoDocumento, numeroDocumento: persona.numeroDocumento } })
+        { where: { tipoDocumento: persona.tipoDocumento, numeroDocumento: persona.numeroDocumento.toString() } })
         .then(personaFind => {
             if (!personaFind) {
                 let personaBuild = Persona.build(persona);
@@ -61,11 +61,15 @@ const setComportamientoMascota = async (res, mascotaId, comportamientoId) => {
 const getNumeroRegistro = async (res) => {
     var numeroRegistros;
     await Mascota
-        .count()
+        .count({
+            where: { estadoRegistro: 'APROBADO' }
+        })
         .then(registros => numeroRegistros = registros);
     return numeroRegistros;
 }
-const agregarPropietario = (tipo, mascotaId, personaId, t) => {
+const agregarPropietario = (tipo, mascotaId, personaId, t) =>
+
+{
     const propietario = { tipo, mascotaId, personaId };
     const propietarioBuild = MascotaPropietario.build(propietario);
     return propietarioBuild.save({transaction: t});
@@ -85,14 +89,10 @@ const getMascotasByDocumento = (req, res) => {
         include: [
             {
                 model: Mascota,
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt', 'deletedAt', 'foto', 'propietarioMascota', 'edad',
-                        'color', 'tamanio', 'sexo', 'raza', 'esterilizado', 'descripcion']
-                }
+                attributes: ['registro', 'fechaRegistro', 'estadoRegistro']
             }
         ],
-        attributes:[ 'id', 'tipoDocumento', 'numeroDocumento', 'nombres', 'apellidoPaterno', 'apellidoMaterno',
-            'correo', 'telefono' ]
+        attributes:[ 'id', 'tipoDocumento', 'numeroDocumento', 'nombres', 'apellidoPaterno', 'apellidoMaterno']
     })
         .then(personas => {
             (personas) ?
@@ -120,13 +120,18 @@ const getMascotasByRegistro = async (req, res) => {
         });
 }
 const getMascotasByEstado = (req, res) => {
-    const { estado } = req.query;
-    Mascota.findAll({
-        where: { estadoRegistro: estado },
-        attributes: {
-            exclude: ['createdAt', 'updatedAt', 'deletedAt', 'foto']
-        }})
-        .then(mascotas => httpOk200Content(res, mascotas, 'Consulta Exitosa'))
+    const { order_by, sort_by, page, size, estadoRegistro } = req.query;
+    Mascota.findAndCountAll({
+            where: { estadoRegistro },
+            attributes: ['id', 'nombre', 'fechaRegistro', 'estadoRegistro', 'registro'],
+            offset: page * size,
+            limit: size,
+            order: [ [sort_by, order_by] ]
+        })
+        .then(mascotas => {
+            const data = getPagingData(mascotas, page, size);
+            httpOk200Content(res, data, 'Consulta Exitosa');
+        })
         .catch(error => httpError500(res, error));
 }
 const getMascotaById = (req, res) => {
@@ -163,9 +168,10 @@ const getMascotaById = (req, res) => {
 const aprobarMascotaById = (req, res) => {
     const {id} = req.body;
     Mascota.findByPk(id)
-        .then(mascota => {
+        .then(async mascota => {
             if (mascota) {
                 mascota.estadoRegistro = 'APROBADO';
+                mascota.registro = await getNumeroRegistro(res) + 1;
                 mascota.save()
                     .then(mascotaAprobado => httpOk200NoContent(res, 'El registro se aprobo correctamente.'))
                     .catch(error => httpError500(res, error));
@@ -174,6 +180,24 @@ const aprobarMascotaById = (req, res) => {
             }
         })
         .catch(error => httpError500(res, error));
+}
+const subsanarObservacionById = async (req, res) => {
+    const { id } = req.query;
+    const observacionFinded = await findObservacionById(id, res);
+    if (observacionFinded) {
+        observacionFinded.estadoSubsanacion = 'SUBSANADO';
+        observacionFinded.save()
+            .then(observacionUpdated => httpOk200NoContent(res, REGISTRO_ACTUALIZADO))
+            .catch(error => httpError500(res, error));
+    } else {
+        httpNotFound404(res, REGISTRO_NO_ENCONTRADO);
+    }
+}
+const findObservacionById = async (id, res) => {
+    let observacionFinded;
+    await Observacion.findOne({ where: { id } })
+        .then(observacion => observacionFinded = observacion);
+    return observacionFinded;
 }
 const observarMascotaById = async (req, res) => {
     const { id, observaciones } = req.body;
@@ -264,7 +288,14 @@ const buscarComportamientosMascota = async (res, numeroRegistro) => {
     return comportamientos;
 }
 
+const getPagingData = (data, page, limit) => {
+    const { count: totalItems, rows: lista } = data;
+    const paginaActual = page ? +page : 0;
+    const totalPaginas = Math.ceil(totalItems / limit);
+    return { totalItems, lista, totalPaginas, paginaActual };
+}
+
 module.exports = {
     crearMascota, getMascotasByDocumento, getMascotasByRegistro, getMascotaById, observarMascotaById,
-    buscarFichaRegistro, convertirNumeroDigitos, getMascotasByEstado, aprobarMascotaById
+    buscarFichaRegistro, convertirNumeroDigitos, getMascotasByEstado, aprobarMascotaById, subsanarObservacionById
 }

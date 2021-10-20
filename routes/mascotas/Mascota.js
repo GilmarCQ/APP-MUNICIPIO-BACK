@@ -9,8 +9,9 @@ mascotaRouter.get('/buscarPorRegistro', mascotaController.getMascotasByRegistro)
 mascotaRouter.get('/buscarPorEstado', mascotaController.getMascotasByEstado);
 mascotaRouter.get('/descargarRegistro', mascotaController.buscarFichaRegistro);
 mascotaRouter.get('/buscarPorId', mascotaController.getMascotaById);
-mascotaRouter.post('/aprobarPorId', usuarioController.tokenIsValid, mascotaController.aprobarMascotaById);
-mascotaRouter.post('/observarPorId', usuarioController.tokenIsValid, mascotaController.observarMascotaById);
+mascotaRouter.post('/aprobarPorId', mascotaController.aprobarMascotaById);
+mascotaRouter.post('/observarPorId', mascotaController.observarMascotaById);
+mascotaRouter.delete('/subsanarObservacionPorId', mascotaController.subsanarObservacionById);
 
 module.exports = {
     mascotaRouter

@@ -12,7 +12,7 @@ const mascota_model = conexion => {
                 type: sequelize.TEXT,
                 allowNull: false },
             edad: {
-                type: sequelize.SMALLINT,
+                type: sequelize.TEXT,
                 allowNull: false },
             color: {
                 type: sequelize.TEXT,
@@ -35,9 +35,7 @@ const mascota_model = conexion => {
             foto: {
                 type: sequelize.TEXT,
                 allowNull: false },
-            registro: {
-                type: sequelize.INTEGER,
-                allowNull: false },
+            registro: { type: sequelize.INTEGER },
             tipoRegistro: {
                 type: sequelize.TEXT,
                 allowNull: false,
