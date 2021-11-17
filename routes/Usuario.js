@@ -6,7 +6,7 @@ usuarioRouter.post('/crear',  usuario.createUser);
 usuarioRouter.put('/editar-nombre-usuario', usuario.tokenIsValid, usuario.editUserName);
 usuarioRouter.put('/editar-password', usuario.updatePassword);
 usuarioRouter.delete('/eliminar', usuario.deleteUser);
-usuarioRouter.get('/listar', usuario.tokenIsValid, usuario.listUsers);
+usuarioRouter.get('/paginar', usuario.paginarUsuarios);
 usuarioRouter.post('/login', usuario.login);
 usuarioRouter.get('/token-valid', usuario.tokenIsValid);
 

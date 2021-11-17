@@ -33,15 +33,17 @@ const libroGeneroModel = require('../models/biblioteca/LibroGenero');
 const visitaModel = require('../models/visitas/Visita');
 const visitanteModel = require('../models/visitas/Visitante');
 
+const padronModel = require('../models/padron/Padron');
 
-// const conexion = new Sequelize(
-//     'municipio', 'postgres', 'root',
-//     {
-//         host: 'localhost',
-//         dialect: 'postgres',
-//         port: 5432
-//     }
-// );
+
+const conexion = new Sequelize(
+    'municipio', 'postgres', 'root',
+    {
+        host: 'localhost',
+        dialect: 'postgres',
+        port: 5432
+    }
+);
 // const conexion = new Sequelize(
 //     'municipiopruebas', 'mdy', 'qazWSX123456', {
 //         host: '192.168.1.3',
@@ -49,13 +51,13 @@ const visitanteModel = require('../models/visitas/Visitante');
 //         port: 5432
 //     }
 // );
-const conexion = new Sequelize(
-    'municipio', 'mdy', 'qazWSX123456', {
-        host: '192.168.1.3',
-        dialect: 'postgres',
-        port: 5432
-    }
-);
+// const conexion = new Sequelize(
+//     'municipio', 'mdy', 'qazWSX123456', {
+//         host: '192.168.1.3',
+//         dialect: 'postgres',
+//         port: 5432
+//     }
+// );
 
 const Entidad = entidadModel(conexion);
 const Sede = sedeModel(conexion);
@@ -88,6 +90,7 @@ const LibroAutor = libroAutorModel(conexion);
 const LibroGenero = libroGeneroModel(conexion);
 const Visita = visitaModel(conexion);
 const Visitante = visitanteModel(conexion);
+const Padron = padronModel(conexion);
 
 // Definicion de Relaciones entre tablas
 Pagina.belongsTo(Modulo);
@@ -126,7 +129,8 @@ Area.hasOne(AreaJerarquia, { foreignKey: 'areaBaseId' });
 Area.hasOne(AreaJerarquia, { foreignKey: 'areaSuperiorId' });
 
 module.exports = {
-    conexion, Usuario, Pagina, Modulo, UsuarioModulo, UsuarioPagina, TipoDocumento, Asociacion, Comportamiento, Mascota,
-    Persona, MascotaComportamiento, MascotaPropietario, MascotaObservacion, Observacion, Autor, Editorial, Genero,
-    Libro, LibroBiblioteca, LibroAutor, LibroGenero, Area, Funcionario, AreaFuncionario, AreaJerarquia, Visita, Visitante
+    conexion, Usuario, Pagina, Modulo, UsuarioModulo, UsuarioPagina, TipoDocumento, Asociacion, Comportamiento,
+    Mascota, Persona, MascotaComportamiento, MascotaPropietario, MascotaObservacion, Observacion, Autor, Editorial,
+    Genero, Libro, LibroBiblioteca, LibroAutor, LibroGenero, Area, Funcionario, AreaFuncionario, AreaJerarquia,
+    Visita, Visitante, Padron
 }

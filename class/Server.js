@@ -21,6 +21,7 @@ const { funcionarioRouter } = require('../routes/entidad/Funcionario');
 const { areaRouter } = require('../routes/entidad/Area');
 const { areaFuncionarioRouter } = require('../routes/entidad/AreaFuncionario');
 const { visitaRouter } = require('../routes/transparencia/Visita');
+const { padronRouter } = require('../routes/padron/Padron');
 
 class Server {
     constructor() {
@@ -55,6 +56,7 @@ class Server {
         this.app.use('/area', areaRouter);
         this.app.use('/cargoFuncionario', areaFuncionarioRouter);
         this.app.use('/visitas', visitaRouter);
+        this.app.use('/padron', padronRouter);
     }
     start() {
         this.app.listen(this.puerto, () => console.log(`Todo operativo en el puerto ${this.puerto}`));

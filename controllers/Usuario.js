@@ -135,7 +135,7 @@ const deleteUser = async (req, res) => {
         .catch(error => httpError500(res, error))
 }
 
-const listUsers = (req, res) => {
+const paginarUsuarios = (req, res) => {
     const { order_by, sort_by, page, size } = req.query;
     Usuario.findAndCountAll({
         where: {},
@@ -151,10 +151,10 @@ const listUsers = (req, res) => {
 }
 
 const getPagingData = (data, page, limit) => {
-    const { count: totalItems, rows: usuarios } = data;
+    const { count: totalItems, rows: lista } = data;
     const paginaActual = page ? +page : 0;
     const totalPaginas = Math.ceil(totalItems / limit);
-    return { totalItems, usuarios, totalPaginas, paginaActual };
+    return { totalItems, lista, totalPaginas, paginaActual };
 }
 
 /**
@@ -203,5 +203,5 @@ const findUserByUserName = async (usuario, res) => {
 }
 
 module.exports = {
-    createUser, editUserName, deleteUser, updatePassword, listUsers, login, tokenIsValid
+    createUser, editUserName, deleteUser, updatePassword, paginarUsuarios, login, tokenIsValid
 }
