@@ -37,14 +37,14 @@ const padronModel = require('../models/padron/Padron');
 const padronPersonaModel = require('../models/padron/PadronPersona');
 
 
-const conexion = new Sequelize(
-    'municipio', 'postgres', 'root',
-    {
-        host: 'localhost',
-        dialect: 'postgres',
-        port: 5432
-    }
-);
+// const conexion = new Sequelize(
+//     'municipio', 'postgres', 'root',
+//     {
+//         host: 'localhost',
+//         dialect: 'postgres',
+//         port: 5432
+//     }
+// );
 // const conexion = new Sequelize(
 //     'municipiopruebas', 'mdy', 'qazWSX123456', {
 //         host: '192.168.1.3',
@@ -52,13 +52,13 @@ const conexion = new Sequelize(
 //         port: 5432
 //     }
 // );
-// const conexion = new Sequelize(
-//     'municipio', 'mdy', 'qazWSX123456', {
-//         host: '192.168.1.3',
-//         dialect: 'postgres',
-//         port: 5432
-//     }
-// );
+const conexion = new Sequelize(
+    'municipio', 'mdy', 'qazWSX123456', {
+        host: '192.168.1.3',
+        dialect: 'postgres',
+        port: 5432
+    }
+);
 
 const Entidad = entidadModel(conexion);
 const Sede = sedeModel(conexion);
