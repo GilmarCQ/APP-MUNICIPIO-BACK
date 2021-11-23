@@ -34,6 +34,7 @@ const visitaModel = require('../models/visitas/Visita');
 const visitanteModel = require('../models/visitas/Visitante');
 
 const padronModel = require('../models/padron/Padron');
+const padronPersonaModel = require('../models/padron/PadronPersona');
 
 
 const conexion = new Sequelize(
@@ -91,6 +92,7 @@ const LibroGenero = libroGeneroModel(conexion);
 const Visita = visitaModel(conexion);
 const Visitante = visitanteModel(conexion);
 const Padron = padronModel(conexion);
+const PadronPersona = padronPersonaModel(conexion);
 
 // Definicion de Relaciones entre tablas
 Pagina.belongsTo(Modulo);
@@ -128,9 +130,16 @@ AreaFuncionario.belongsTo(Area);
 Area.hasOne(AreaJerarquia, { foreignKey: 'areaBaseId' });
 Area.hasOne(AreaJerarquia, { foreignKey: 'areaSuperiorId' });
 
+Persona.belongsToMany(Padron, { through: PadronPersona, foreignKey: 'personaId' });
+Padron.belongsToMany(Persona, { through: PadronPersona, foreignKey: 'padronId' });
+Padron.hasMany(PadronPersona);
+PadronPersona.belongsTo(Padron);
+Persona.hasMany(PadronPersona);
+PadronPersona.belongsTo(Persona);
+
 module.exports = {
     conexion, Usuario, Pagina, Modulo, UsuarioModulo, UsuarioPagina, TipoDocumento, Asociacion, Comportamiento,
     Mascota, Persona, MascotaComportamiento, MascotaPropietario, MascotaObservacion, Observacion, Autor, Editorial,
     Genero, Libro, LibroBiblioteca, LibroAutor, LibroGenero, Area, Funcionario, AreaFuncionario, AreaJerarquia,
-    Visita, Visitante, Padron
+    Visita, Visitante, Padron, PadronPersona
 }

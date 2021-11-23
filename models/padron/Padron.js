@@ -27,4 +27,4 @@ const padron_model = (conexion) => {
             paranoid: true
         });
 }
-module.exports = padron_model;88
+module.exports = padron_model;
