@@ -56,7 +56,7 @@ const tokenIsValid = (req, res, next) => {
  * @param res
  */
 const createUser = async (req, res) => {
-    const user = req.body;
+    const {user} = req.body;
     if (await isDuplicateUser(user.usuario, res))
         httpBadRequest400(res, 'El usuario ya existe, ingrese otro nombre de usuario.');
     const userBuild = Usuario.build(user);

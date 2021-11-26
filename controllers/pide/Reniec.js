@@ -29,7 +29,15 @@ const actualizarCredencial = (req, res) => {
         .then(response => httpOk200Content(res, response.data, 'Actualización de credencial correcta.'))
         .catch(error => httpError500(res, error));
 }
+const renovarCredencial = (req, res) => {
+    const { credencialAnterior, credencialNueva, nuDni, nuRuc } = req.query;
+    axios
+        .get(`${API_RENIEC}/ActualizarCredencial`,
+            { params: { credencialAnterior, credencialNueva, nuDni, nuRuc, out: 'json' } })
+        .then(response => httpOk200Content(res, response.data, 'Actualización de credencial correcta.'))
+        .catch(error => httpError500(res, error));
+}
 
 module.exports = {
-    consultaDni, actualizarCredencial
+    consultaDni, actualizarCredencial, renovarCredencial
 }

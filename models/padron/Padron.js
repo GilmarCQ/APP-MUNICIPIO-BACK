@@ -19,7 +19,8 @@ const padron_model = (conexion) => {
                 allowNull: false },
             host: {
                 type: sequelize.TEXT,
-                allowNull: false }
+                allowNull: false },
+            usuario: { type: sequelize.TEXT }
         },
         {
             tableName: 'padron',

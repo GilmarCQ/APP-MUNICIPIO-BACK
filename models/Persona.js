@@ -39,7 +39,8 @@ const persona_model = (conexion) => {
             lote: { type: sequelize.TEXT },
             kilometro: { type: sequelize.TEXT },
             comite: { type: sequelize.TEXT },
-            sector: { type: sequelize.TEXT }
+            sector: { type: sequelize.TEXT },
+            usuario: { type: sequelize.TEXT }
         },
         {
             tableName: 'persona',

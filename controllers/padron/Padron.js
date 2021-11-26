@@ -1,5 +1,5 @@
 const { Padron, PadronPersona, Persona } = require('../../config/Sequelize');
-const { findPersonaByDocumento, createPerson } = require('../../controllers/Persona');
+const { findPersonaByDocumento, createPerson, updatePerson } = require('../../controllers/Persona');
 const {
     httpError500,
     httpOk200NoContent,
@@ -75,7 +75,8 @@ const buscarPersonaPorDocumentoPorIdPadron = async (req, res) => {
                     'manzana',
                     'lote',
                     'edad',
-                    'genero'
+                    'genero',
+                    'telefono'
                 ]
             }
         })
@@ -91,20 +92,25 @@ const buscarPersonaPorDocumentoPorIdPadron = async (req, res) => {
 const agregarBeneficiario = async (req, res) => {
     const persona = req.body;
     const { padronId } = req.body;
+    const { usuario } = req.headers;
+    persona.usuario = usuario;
+
     try {
         const padronPersonaFinded = await findPersonaPadron(persona.tipoDocumento, persona.numeroDocumento, padronId);
-        console.log(padronPersonaFinded);
         if (padronPersonaFinded) {
             httpBadRequest400(res, 'La persona ya se encuentra registrada en el padron.')
         } else {
             let personaFindedCreated = await findPersonaByDocumento(persona.tipoDocumento, persona.numeroDocumento);
             if (!personaFindedCreated) {
                 personaFindedCreated = await createPerson(persona);
+            } else {
+                personaFindedCreated = await updatePerson(persona, personaFindedCreated);
             }
             const padronPersona = {
                 padronId,
                 personaId: personaFindedCreated.id,
-                tipoEmpadronado: persona.tipoBeneficiario
+                tipoEmpadronado: persona.tipoBeneficiario,
+                usuario
             };
             const padronPersonaBuild = PadronPersona.build(padronPersona);
             padronPersonaBuild

@@ -12,6 +12,7 @@ const paginaModel = require('../models/Pagina');
 const moduloModel = require('../models/Modulo');
 const usuarioPaginaModel = require('../models/UsuarioPagina');
 const usuarioModuloModel = require('../models/usuarioModulo');
+const tipoBeneficiarioModel = require('../models/catalogos/TipoBeneficiario');
 const tipoDocumentoModel = require('../models/catalogos/TipoDocumento');
 const asociacionModel = require('../models/catalogos/Asociacion');
 const comportamientoModel = require('../models/catalogos/Comportamiento');
@@ -74,6 +75,7 @@ const Modulo = moduloModel(conexion);
 const UsuarioPagina = usuarioPaginaModel(conexion);
 const UsuarioModulo = usuarioModuloModel(conexion);
 const TipoDocumento = tipoDocumentoModel(conexion);
+const TipoBeneficiario = tipoBeneficiarioModel(conexion);
 const Asociacion = asociacionModel(conexion);
 const Comportamiento = comportamientoModel(conexion);
 const Observacion = observacionModel(conexion);
@@ -141,5 +143,5 @@ module.exports = {
     conexion, Usuario, Pagina, Modulo, UsuarioModulo, UsuarioPagina, TipoDocumento, Asociacion, Comportamiento,
     Mascota, Persona, MascotaComportamiento, MascotaPropietario, MascotaObservacion, Observacion, Autor, Editorial,
     Genero, Libro, LibroBiblioteca, LibroAutor, LibroGenero, Area, Funcionario, AreaFuncionario, AreaJerarquia,
-    Visita, Visitante, Padron, PadronPersona
+    Visita, Visitante, Padron, PadronPersona, TipoBeneficiario
 }

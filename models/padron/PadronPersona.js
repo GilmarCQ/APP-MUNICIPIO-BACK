@@ -18,7 +18,8 @@ const padronPersona_model = (conexion) => {
                 type: sequelize.DATE,
                 allowNull: true,
                 defaultValue: NOW
-            }
+            },
+            usuario: { type: sequelize.TEXT }
         },
         {
             tableName: 'padronPersona',
