@@ -7,5 +7,6 @@ padronRouter.post('/agregarBeneficiario', padronController.agregarBeneficiario);
 padronRouter.get('/paginar', padronController.paginarPadrones);
 padronRouter.get('/buscarPadronPorId', padronController.buscarPadronPorId);
 padronRouter.get('/buscarPersonaPadron', padronController.buscarPersonaPorDocumentoPorIdPadron);
+padronRouter.get('/buscarPadronPersonaIdPadron', padronController.buscarReportePadronBeneficiariosPorIdPadron);
 
 module.exports = { padronRouter }

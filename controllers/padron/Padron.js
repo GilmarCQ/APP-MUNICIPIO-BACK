@@ -89,6 +89,66 @@ const buscarPersonaPorDocumentoPorIdPadron = async (req, res) => {
         })
         .catch(error => httpError500(res, error));
 }
+const buscarReportePadronBeneficiariosPorIdPadron = async (req, res) => {
+    const { id, zona, tipoBeneficiario } = req.query;
+    console.log(id, zona, tipoBeneficiario);
+    const padronEncontrado = await findPadronById(id);
+    var padronBeneficiarios;
+    try {
+        if (padronEncontrado) {
+            if (zona === '') {
+                if (tipoBeneficiario === '') {
+                    console.log('-----------------CONTADOR----------------');
+                    padronBeneficiarios = await contarPadronBeneficiariosPorId(id);
+                    console.log(padronBeneficiarios);
+                } else {
+                    padronBeneficiarios = await findPadronBeneficiariosPorIdPorTipoBeneficiario(id, tipoBeneficiario);
+                }
+            } else {
+                if (tipoBeneficiario === '') {
+                    padronBeneficiarios = await contarPadronBeneficiariosPorIdPorZona(id, zona);
+                } else {
+                    padronBeneficiarios =
+                        await findPadronBeneficiariosPorIdPorTipoBeneficiarioYZona(id, tipoBeneficiario, zona);
+                }
+            }
+            httpOk200Content(res, padronBeneficiarios, CONSULTA_SATISFACTORIA);
+        } else {
+            httpNotFound404(res, REGISTRO_NO_ENCONTRADO);
+        }
+    } catch (e) {
+        httpError500(res, e);
+    }
+}
+const buscarPadronBeneficiariosPorIdPadron = async (req, res) => {
+    const { id, zona, tipoBeneficiario } = req.query;
+    console.log(id, zona, tipoBeneficiario);
+    const padronEncontrado = await findPadronById(id);
+    var padronBeneficiarios;
+    try {
+        if (padronEncontrado) {
+            if (zona === '') {
+                if (tipoBeneficiario === '') {
+                    padronBeneficiarios = await findPadronBeneficiariosPorId(id);
+                } else {
+                    padronBeneficiarios = await findPadronBeneficiariosPorIdPorTipoBeneficiario(id, tipoBeneficiario);
+                }
+            } else {
+                if (tipoBeneficiario === '') {
+                    padronBeneficiarios = await findPadronBeneficiariosPorIdPorZona(id, zona);
+                } else {
+                    padronBeneficiarios =
+                        await findPadronBeneficiariosPorIdPorTipoBeneficiarioYZona(id, tipoBeneficiario, zona);
+                }
+            }
+            httpOk200Content(res, padronBeneficiarios, CONSULTA_SATISFACTORIA);
+        } else {
+            httpNotFound404(res, REGISTRO_NO_ENCONTRADO);
+        }
+    } catch (e) {
+        httpError500(res, e);
+    }
+}
 const agregarBeneficiario = async (req, res) => {
     const persona = req.body;
     const { padronId } = req.body;
@@ -134,9 +194,11 @@ const findPersonaPadron = (tipoDocumento, numeroDocumento, idPadron) => {
         ]
     });
 }
-
 const findPadronByName = (nombre) => {
     return Padron.findOne({ where: { nombre } });
+}
+const findPadronById = (id) => {
+    return Padron.findOne({ where: { id } });
 }
 const getPagingData = (data, page, limit) => {
     const { count: totalItems, rows: lista } = data;
@@ -144,6 +206,173 @@ const getPagingData = (data, page, limit) => {
     const totalPaginas = Math.ceil(totalItems / limit);
     return { totalItems, lista, totalPaginas, paginaActual };
 }
+const findPadronBeneficiariosPorId = (id) => {
+    return Padron
+        .findOne({
+            where: { id },
+            attributes: ['id', 'nombre'],
+            include: [
+                {
+                    model: Persona,
+                    attributes: [
+                        'id',
+                        'tipoDocumento',
+                        'numeroDocumento',
+                        'apellidoPaterno',
+                        'apellidoMaterno',
+                        'nombres',
+                        'direccion',
+                        'zona',
+                        'manzana',
+                        'lote',
+                        'edad',
+                        'genero',
+                        'telefono'
+                    ]
+                }
+            ]
+        });
+}
+const findPadronBeneficiariosPorIdPorZona = (id, zona) => {
+    return Padron
+        .findOne({
+            where: { id },
+            attributes: ['id', 'nombre'],
+            include: [
+                {
+                    model: Persona,
+                    where: { zona },
+                    attributes: [
+                        'id',
+                        'tipoDocumento',
+                        'numeroDocumento',
+                        'apellidoPaterno',
+                        'apellidoMaterno',
+                        'nombres',
+                        'direccion',
+                        'zona',
+                        'manzana',
+                        'lote',
+                        'edad',
+                        'genero',
+                        'telefono'
+                    ]
+                }
+            ]
+        });
+}
+const findPadronBeneficiariosPorIdPorTipoBeneficiarioYZona = (id, tipoBeneficiario, zona) => {
+    console.log('ZONA TIPO');
+    return Padron
+        .findOne({
+            where: { id },
+            attributes: ['id', 'nombre'],
+            include: [
+                {
+                    model: Persona,
+                    where: { zona },
+                    attributes: [
+                        'id',
+                        'tipoDocumento',
+                        'numeroDocumento',
+                        'apellidoPaterno',
+                        'apellidoMaterno',
+                        'nombres',
+                        'direccion',
+                        'zona',
+                        'manzana',
+                        'lote',
+                        'edad',
+                        'genero',
+                        'telefono'
+                    ],
+                    through: {
+                        model: PadronPersona,
+                        where: { tipoEmpadronado: tipoBeneficiario },
+                        attributes: [ 'fechaRegistro', 'tipoEmpadronado', 'usuario' ]
+                    }
+                }
+            ]
+        });
+}
+const findPadronBeneficiariosPorIdPorTipoBeneficiario = (id, tipoBeneficiario) => {
+    return Padron
+        .findOne({
+            where: { id },
+            attributes: ['id', 'nombre'],
+            include: [
+                {
+                    model: Persona,
+                    attributes: [
+                        'id',
+                        'tipoDocumento',
+                        'numeroDocumento',
+                        'apellidoPaterno',
+                        'apellidoMaterno',
+                        'nombres',
+                        'direccion',
+                        'zona',
+                        'manzana',
+                        'lote',
+                        'edad',
+                        'genero',
+                        'telefono'
+                    ],
+                    through: {
+                        model: PadronPersona,
+                        where: { tipoEmpadronado: tipoBeneficiario },
+                        attributes: [ 'fechaRegistro', 'tipoEmpadronado', 'usuario' ]
+                    }
+                }
+            ]
+        });
+}
+
+const contarPadronBeneficiariosPorId = (id) => {
+    let padronFinal;
+    Persona
+        .count({
+            group: 'zona',
+            order: ['zona'],
+            attributes: ['zona'],
+            include: [
+                {
+                    model: Padron,
+                    where: { id },
+                    through: {
+                        model: PadronPersona,
+                        attributes: []
+                    }
+                }
+            ]
+        })
+        .then(contenido => {
+            Persona.count({
+                include: [
+                    {
+                        model: Padron,
+                        where: { id },
+                        through: {
+                            model: PadronPersona,
+                            attributes: []
+                        }
+                    }
+                ]
+            })
+                .then(total => {
+                    padronFinal = {
+                        total,
+                        lista: contenido
+                    };
+                    console.log(padronFinal);
+                    return padronFinal;
+                });
+        });
+    return padronFinal;
+}
+
 module.exports = {
-    crearPadron, paginarPadrones, buscarPadronPorId, agregarBeneficiario, buscarPersonaPorDocumentoPorIdPadron
+    crearPadron, paginarPadrones, buscarPadronPorId, agregarBeneficiario,
+    buscarPersonaPorDocumentoPorIdPadron, buscarPadronBeneficiariosPorIdPadron,
+    buscarReportePadronBeneficiariosPorIdPadron
 }

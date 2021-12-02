@@ -67,9 +67,7 @@ const getNumeroRegistro = async (res) => {
         .then(registros => numeroRegistros = registros);
     return numeroRegistros;
 }
-const agregarPropietario = (tipo, mascotaId, personaId, t) =>
-
-{
+const agregarPropietario = (tipo, mascotaId, personaId, t) => {
     const propietario = { tipo, mascotaId, personaId };
     const propietarioBuild = MascotaPropietario.build(propietario);
     return propietarioBuild.save({transaction: t});
