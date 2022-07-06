@@ -1,5 +1,5 @@
-const { Padron, PadronPersona, Persona } = require('../../config/Sequelize');
-const { findPersonaByDocumento, createPerson, updatePerson } = require('../../controllers/Persona');
+const {Padron, PadronPersona, Persona, PersonaTutor, PadronPersonaTutor} = require('../../config/Sequelize');
+const {findPersonaByDocumento, createPerson, updatePerson} = require('../../controllers/Persona');
 const {
     httpError500,
     httpOk200NoContent,
@@ -8,7 +8,13 @@ const {
     httpNotFound404,
     httpBadRequest400, httpError400
 } = require('../../utils/httpMessages');
-const { REGISTRO_DUPLICADO, REGISTRO_CREADO, REGISTRO_NO_ENCONTRADO, CONSULTA_SATISFACTORIA } = require('../../utils/apiMessages');
+const {
+    REGISTRO_DUPLICADO,
+    REGISTRO_CREADO,
+    REGISTRO_NO_ENCONTRADO,
+    CONSULTA_SATISFACTORIA
+} = require('../../utils/apiMessages');
+const {Sequelize} = require('sequelize');
 
 const crearPadron = async (req, res) => {
     const padron = req.body;
@@ -24,14 +30,14 @@ const crearPadron = async (req, res) => {
     }
 }
 const paginarPadrones = (req, res) => {
-    const { order_by, sort_by, page, size } = req.query;
+    const {order_by, sort_by, page, size} = req.query;
     Padron
         .findAndCountAll({
             where: {},
             attributes: ['id', 'nombre'],
             offset: page * size,
             limit: size,
-            order: [ [sort_by, order_by] ]
+            order: [[sort_by, order_by]]
         })
         .then(padrones => {
             const data = getPagingData(padrones, page, size);
@@ -40,7 +46,7 @@ const paginarPadrones = (req, res) => {
         .catch(error => httpError500(res, error));
 }
 const buscarPadronPorId = (req, res) => {
-    const { id } = req.query;
+    const {id} = req.query;
     Padron
         .findByPk(id, {
             attributes: ['id', 'nombre']
@@ -55,14 +61,14 @@ const buscarPadronPorId = (req, res) => {
         .catch(error => httpError500(res, error));
 }
 const buscarPersonaPorDocumentoPorIdPadron = async (req, res) => {
-    const { idPadron, numeroDocumento, tipoDocumento } = req.query;
+    const {idPadron, numeroDocumento, tipoDocumento} = req.query;
     Padron
         .findOne({
-            where: { id: idPadron },
+            where: {id: idPadron},
             attributes: ['id', 'nombre'],
             include: {
                 model: Persona,
-                where: { tipoDocumento, numeroDocumento },
+                where: {tipoDocumento, numeroDocumento},
                 attributes: [
                     'id',
                     'tipoDocumento',
@@ -90,27 +96,19 @@ const buscarPersonaPorDocumentoPorIdPadron = async (req, res) => {
         .catch(error => httpError500(res, error));
 }
 const buscarReportePadronBeneficiariosPorIdPadron = async (req, res) => {
-    const { id, zona, tipoBeneficiario } = req.query;
-    console.log(id, zona, tipoBeneficiario);
+    const {id, zona, tipoBeneficiario, fechaInicio, fechaFin} = req.query;
+    console.log(id, zona, tipoBeneficiario, fechaInicio, fechaFin);
     const padronEncontrado = await findPadronById(id);
     var padronBeneficiarios;
+
     try {
         if (padronEncontrado) {
-            if (zona === '') {
-                if (tipoBeneficiario === '') {
-                    console.log('-----------------CONTADOR----------------');
-                    padronBeneficiarios = await contarPadronBeneficiariosPorId(id);
-                    console.log(padronBeneficiarios);
-                } else {
-                    padronBeneficiarios = await findPadronBeneficiariosPorIdPorTipoBeneficiario(id, tipoBeneficiario);
-                }
+            if (tipoBeneficiario === '') {
+                console.log('-----------------CONTADOR----------------');
+                padronBeneficiarios = await contarPadronBeneficiariosPorIdZonas(id, fechaInicio, fechaFin);
+                // console.log(padronBeneficiarios);
             } else {
-                if (tipoBeneficiario === '') {
-                    padronBeneficiarios = await contarPadronBeneficiariosPorIdPorZona(id, zona);
-                } else {
-                    padronBeneficiarios =
-                        await findPadronBeneficiariosPorIdPorTipoBeneficiarioYZona(id, tipoBeneficiario, zona);
-                }
+                padronBeneficiarios = await findPadronBeneficiariosPorIdPorTipoBeneficiario(id, tipoBeneficiario);
             }
             httpOk200Content(res, padronBeneficiarios, CONSULTA_SATISFACTORIA);
         } else {
@@ -121,7 +119,7 @@ const buscarReportePadronBeneficiariosPorIdPadron = async (req, res) => {
     }
 }
 const buscarPadronBeneficiariosPorIdPadron = async (req, res) => {
-    const { id, zona, tipoBeneficiario } = req.query;
+    const {id, zona, tipoBeneficiario} = req.query;
     console.log(id, zona, tipoBeneficiario);
     const padronEncontrado = await findPadronById(id);
     var padronBeneficiarios;
@@ -151,20 +149,40 @@ const buscarPadronBeneficiariosPorIdPadron = async (req, res) => {
 }
 const agregarBeneficiario = async (req, res) => {
     const persona = req.body;
-    const { padronId } = req.body;
-    const { usuario } = req.headers;
+    const {tutor} = persona;
+    const {padronId} = req.body;
+    const {usuario} = req.headers;
+    console.log('---------------------');
+    console.log(persona);
+    console.log('---------------------');
+    console.log(padronId);
+    console.log('---------------------');
+    console.log(usuario);
     persona.usuario = usuario;
-
     try {
         const padronPersonaFinded = await findPersonaPadron(persona.tipoDocumento, persona.numeroDocumento, padronId);
         if (padronPersonaFinded) {
             httpBadRequest400(res, 'La persona ya se encuentra registrada en el padron.')
         } else {
-            let personaFindedCreated = await findPersonaByDocumento(persona.tipoDocumento, persona.numeroDocumento);
-            if (!personaFindedCreated) {
-                personaFindedCreated = await createPerson(persona);
-            } else {
-                personaFindedCreated = await updatePerson(persona, personaFindedCreated);
+            let personaFindedCreated =
+                await findOrCreatePersona(persona.tipoDocumento, persona.numeroDocumento, persona);
+            if (tutor) {
+                tutor.direccion = persona.direccion;
+                tutor.zona = persona.zona;
+                tutor.manzana = persona.manzana;
+                tutor.lote = persona.lote;
+                tutor.usuario = persona.usuario;
+                let tutorFindedCreated =
+                    await findOrCreatePersona(tutor.tipoDocumento, tutor.numeroDocumento, tutor);
+                const personTutorBuild = PersonaTutor.build({
+                    tutorId: tutorFindedCreated.id,
+                    personaId: personaFindedCreated.id,
+                    usuario,
+                    tipoTutor: persona.tipoTutor
+                });
+                const personaTutorCreated = await createPersonTutor(personTutorBuild);
+                const padronPersonTutor = await createPadronPersonTutor(personTutorBuild);
+
             }
             const padronPersona = {
                 padronId,
@@ -175,41 +193,63 @@ const agregarBeneficiario = async (req, res) => {
             const padronPersonaBuild = PadronPersona.build(padronPersona);
             padronPersonaBuild
                 .save()
-                .then( padronPersonaCreated => httpOk200NoContent(res, REGISTRO_CREADO) )
-                .catch( error => httpError500(res, error) );
+                .then(padronPersonaCreated => httpOk200NoContent(res, REGISTRO_CREADO))
+                .catch(error => httpError500(res, error));
         }
     } catch (e) {
         httpError500(res, e)
     }
 }
+const createPersonTutor = async (personTutorBuild) => {
+    let personaTutorV;
+    await personTutorBuild.save()
+        .then(personaC => personaTutorV = personaC);
+    return personaTutorV;
+}
+const createPadronPersonTutor = async (padronPersonTutorBuild) => {
+    let padronPersonaTutorV;
+    await padronPersonTutorBuild.save()
+        .then(personaC => padronPersonaTutorV = personaC);
+    return padronPersonaTutorV;
+}
+
+const findOrCreatePersona = async (tipoDocumento, numeroDocumento, persona) => {
+    let personaFindedCreated = await findPersonaByDocumento(persona.tipoDocumento, persona.numeroDocumento);
+    if (personaFindedCreated) {
+        personaFindedCreated = await updatePerson(persona, personaFindedCreated);
+    } else {
+        personaFindedCreated = await createPerson(persona);
+    }
+    return personaFindedCreated;
+}
 
 const findPersonaPadron = (tipoDocumento, numeroDocumento, idPadron) => {
     return Persona.findOne({
-        where: { tipoDocumento, numeroDocumento },
+        where: {tipoDocumento, numeroDocumento},
         include: [
             {
                 model: Padron,
-                where: { id: idPadron }
+                where: {id: idPadron}
             }
         ]
     });
 }
 const findPadronByName = (nombre) => {
-    return Padron.findOne({ where: { nombre } });
+    return Padron.findOne({where: {nombre}});
 }
 const findPadronById = (id) => {
-    return Padron.findOne({ where: { id } });
+    return Padron.findOne({where: {id}});
 }
 const getPagingData = (data, page, limit) => {
-    const { count: totalItems, rows: lista } = data;
+    const {count: totalItems, rows: lista} = data;
     const paginaActual = page ? +page : 0;
     const totalPaginas = Math.ceil(totalItems / limit);
-    return { totalItems, lista, totalPaginas, paginaActual };
+    return {totalItems, lista, totalPaginas, paginaActual};
 }
 const findPadronBeneficiariosPorId = (id) => {
     return Padron
         .findOne({
-            where: { id },
+            where: {id},
             attributes: ['id', 'nombre'],
             include: [
                 {
@@ -236,12 +276,12 @@ const findPadronBeneficiariosPorId = (id) => {
 const findPadronBeneficiariosPorIdPorZona = (id, zona) => {
     return Padron
         .findOne({
-            where: { id },
+            where: {id},
             attributes: ['id', 'nombre'],
             include: [
                 {
                     model: Persona,
-                    where: { zona },
+                    where: {zona},
                     attributes: [
                         'id',
                         'tipoDocumento',
@@ -265,12 +305,12 @@ const findPadronBeneficiariosPorIdPorTipoBeneficiarioYZona = (id, tipoBeneficiar
     console.log('ZONA TIPO');
     return Padron
         .findOne({
-            where: { id },
+            where: {id},
             attributes: ['id', 'nombre'],
             include: [
                 {
                     model: Persona,
-                    where: { zona },
+                    where: {zona},
                     attributes: [
                         'id',
                         'tipoDocumento',
@@ -288,8 +328,8 @@ const findPadronBeneficiariosPorIdPorTipoBeneficiarioYZona = (id, tipoBeneficiar
                     ],
                     through: {
                         model: PadronPersona,
-                        where: { tipoEmpadronado: tipoBeneficiario },
-                        attributes: [ 'fechaRegistro', 'tipoEmpadronado', 'usuario' ]
+                        where: {tipoEmpadronado: tipoBeneficiario},
+                        attributes: ['fechaRegistro', 'tipoEmpadronado', 'usuario']
                     }
                 }
             ]
@@ -298,7 +338,7 @@ const findPadronBeneficiariosPorIdPorTipoBeneficiarioYZona = (id, tipoBeneficiar
 const findPadronBeneficiariosPorIdPorTipoBeneficiario = (id, tipoBeneficiario) => {
     return Padron
         .findOne({
-            where: { id },
+            where: {id},
             attributes: ['id', 'nombre'],
             include: [
                 {
@@ -320,55 +360,35 @@ const findPadronBeneficiariosPorIdPorTipoBeneficiario = (id, tipoBeneficiario) =
                     ],
                     through: {
                         model: PadronPersona,
-                        where: { tipoEmpadronado: tipoBeneficiario },
-                        attributes: [ 'fechaRegistro', 'tipoEmpadronado', 'usuario' ]
+                        where: {tipoEmpadronado: tipoBeneficiario},
+                        attributes: ['fechaRegistro', 'tipoEmpadronado', 'usuario']
                     }
                 }
             ]
         });
 }
 
-const contarPadronBeneficiariosPorId = (id) => {
+const contarPadronBeneficiariosPorIdZonas = (id, fechaInicio, fechaFin) => {
     let padronFinal;
-    Persona
-        .count({
-            group: 'zona',
-            order: ['zona'],
-            attributes: ['zona'],
-            include: [
-                {
-                    model: Padron,
-                    where: { id },
-                    through: {
-                        model: PadronPersona,
-                        attributes: []
-                    }
-                }
-            ]
+    return Persona
+        .findAll({
+            attributes: [
+                'zona',
+                [Sequelize.fn('count', 'zona'), 'total']
+            ],
+            group: ['zona'],
+            // include: [
+            //     {
+            //         model: Padron,
+            //         where: { id },
+            //         attributes: [],
+            //         npm: {
+            //             model: PadronPersona, as: 'padronPersona',
+            //             attributes: [ 'tipoEmpadronado']
+            //         }
+            //     }
+            // ]
         })
-        .then(contenido => {
-            Persona.count({
-                include: [
-                    {
-                        model: Padron,
-                        where: { id },
-                        through: {
-                            model: PadronPersona,
-                            attributes: []
-                        }
-                    }
-                ]
-            })
-                .then(total => {
-                    padronFinal = {
-                        total,
-                        lista: contenido
-                    };
-                    console.log(padronFinal);
-                    return padronFinal;
-                });
-        });
-    return padronFinal;
 }
 
 module.exports = {

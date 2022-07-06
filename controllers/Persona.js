@@ -25,7 +25,9 @@ const updatePerson = async (persona, personaFinded) => {
     }
     return personaFinded;
 }
-
+/*
+* Busca si la persona existe en la base de datos a partir del Tipo y Número de Documento
+* */
 const findPersonaByDocumento = (tipoDocumento, numeroDocumento) => {
     return Persona.findOne({ where: { tipoDocumento, numeroDocumento } })
 }

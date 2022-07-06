@@ -19,7 +19,7 @@ const padronPersona_model = (conexion) => {
                 allowNull: true,
                 defaultValue: NOW
             },
-            usuario: { type: sequelize.TEXT }
+            usuario: {type: sequelize.TEXT}
         },
         {
             tableName: 'padronPersona',

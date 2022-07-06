@@ -47,7 +47,7 @@ const consultaTitularidad = (req, res) => {
         }
     };
     axios
-        .get(`${API_SUNARP}/Titularidad`, { params: parametros})
+        .get(`${API_SUNARP}/TitularidadSIRSARP`, { params: parametros})
         .then(response => httpOk200Content(res, response.data, 'Consulta realizada correctamente.'))
         .catch(error => httpError500(res, error));
 }
@@ -62,7 +62,7 @@ const consultaOficinas = (req, res) => {
 const consultaAsientos = (req, res) => {
     const { zona, oficina, partida, registro } = req.query;
     axios
-        .get(`${API_SUNARP}/ListarAsientos`,
+        .get(`${API_SUNARP}/ListarAsientosSIRSARP`,
             {
                 params: {
                     zona,
@@ -77,7 +77,7 @@ const consultaAsientos = (req, res) => {
 const consultaAsiento = (req, res) => {
     const { transaccion, idImg, tipo, nroTotalPag, nroPagRef, pagina } = req.query;
     axios
-        .get(`${API_SUNARP}/VerAsientos`,
+        .get(`${API_SUNARP}/VerAsientosSIRSARP`,
             {
                 params: {
                     transaccion,

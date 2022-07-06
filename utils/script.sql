@@ -285,3 +285,21 @@ VALUES
 INSERT INTO sede ( id, nombre, descripcion, direccion, "createdAt", "updatedAt", "deletedAt", "entidadId")
 VALUES
     (1, 'CENTRO CIVICO', 'SEDE PRINCIPAL', 'Mza. W Lote. 2-3 Asc. Ciudad de Dios Zona 3 Sec', NOW(), NOW(), null, 1);
+
+INSERT INTO public."tipoTutor"(	id, nombre, siglas, "createdAt", "updatedAt") VALUES
+	(1, 'PADRE / MADRE', 'PAD-MAD', NOW(), NOW()),
+	(2, 'FAMILIAR', 'FAM', NOW(), NOW()),
+	(3, 'APODERADO', 'APODERADO', NOW(), NOW());
+
+
+select
+	persona."tipoDocumento", persona."numeroDocumento", persona.nombres, persona."apellidoPaterno", persona."apellidoMaterno",
+	persona.direccion, persona.manzana, persona.lote, persona.telefono, persona.edad, persona.genero, persona.zona,
+	"padronPersona"."tipoEmpadronado"
+from persona
+inner join "padronPersona"
+on "padronPersona"."personaId" = persona.id
+inner join padron
+on padron.id = "padronPersona"."padronId"
+where padron.id = 1
+and "padronPersona"."deletedAt" is null

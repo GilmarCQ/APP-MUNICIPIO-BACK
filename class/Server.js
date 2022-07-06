@@ -23,6 +23,7 @@ const { areaFuncionarioRouter } = require('../routes/entidad/AreaFuncionario');
 const { visitaRouter } = require('../routes/transparencia/Visita');
 const { padronRouter } = require('../routes/padron/Padron');
 const { tipoBeneficiarioRouter } = require('../routes/catalogos/TipoBeneficiario');
+const { tipoTutorRouter } = require('../routes/catalogos/TipoTutor');
 
 class Server {
     constructor() {
@@ -59,10 +60,11 @@ class Server {
         this.app.use('/visitas', visitaRouter);
         this.app.use('/padron', padronRouter);
         this.app.use('/tipoBeneficiario', tipoBeneficiarioRouter);
+        this.app.use('/tipoTutor', tipoTutorRouter);
     }
     start() {
         this.app.listen(this.puerto, () => console.log(`Todo operativo en el puerto ${this.puerto}`));
-        conexion.sync({alter: false, force: false}).then(() => console.log('Base de datos sincronizada.'))
+        conexion.sync({alter: false, force: false}).then(() => console.log('Base de datos sincronizada.', this.puerto))
     }
 }
 module.exports = Server;

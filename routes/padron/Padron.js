@@ -9,4 +9,4 @@ padronRouter.get('/buscarPadronPorId', padronController.buscarPadronPorId);
 padronRouter.get('/buscarPersonaPadron', padronController.buscarPersonaPorDocumentoPorIdPadron);
 padronRouter.get('/buscarPadronPersonaIdPadron', padronController.buscarReportePadronBeneficiariosPorIdPadron);
 
-module.exports = { padronRouter }
+module.exports = {padronRouter}

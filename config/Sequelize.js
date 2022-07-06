@@ -14,6 +14,7 @@ const usuarioPaginaModel = require('../models/UsuarioPagina');
 const usuarioModuloModel = require('../models/usuarioModulo');
 const tipoBeneficiarioModel = require('../models/catalogos/TipoBeneficiario');
 const tipoDocumentoModel = require('../models/catalogos/TipoDocumento');
+const tipoTutorModel = require('../models/catalogos/TipoTutor');
 const asociacionModel = require('../models/catalogos/Asociacion');
 const comportamientoModel = require('../models/catalogos/Comportamiento');
 const observacionModel = require('../models/Observacion');
@@ -22,6 +23,7 @@ const mascotaComportamiento = require('../models/mascotas/MascotaComportamiento'
 const mascotaPropietario = require('../models/mascotas/MascotaPropietario');
 const mascotaObservacion = require('../models/mascotas/MascotaObservacion');
 const personaModel = require('../models/Persona');
+const personaTutorModel = require('../models/PersonaTutor');
 
 const autorModel = require('../models/biblioteca/Autor');
 const editorialModel = require('../models/biblioteca/Editorial');
@@ -36,6 +38,7 @@ const visitanteModel = require('../models/visitas/Visitante');
 
 const padronModel = require('../models/padron/Padron');
 const padronPersonaModel = require('../models/padron/PadronPersona');
+const padronPersonaTutorModel = require('../models/padron/PadronPersonaTutor');
 
 
 // const conexion = new Sequelize(
@@ -75,12 +78,15 @@ const Modulo = moduloModel(conexion);
 const UsuarioPagina = usuarioPaginaModel(conexion);
 const UsuarioModulo = usuarioModuloModel(conexion);
 const TipoDocumento = tipoDocumentoModel(conexion);
+const TipoTutor = tipoTutorModel(conexion);
 const TipoBeneficiario = tipoBeneficiarioModel(conexion);
 const Asociacion = asociacionModel(conexion);
 const Comportamiento = comportamientoModel(conexion);
 const Observacion = observacionModel(conexion);
 const Mascota = mascotaModel(conexion);
 const Persona = personaModel(conexion);
+const PersonaTutor = personaTutorModel(conexion);
+
 const MascotaComportamiento = mascotaComportamiento(conexion);
 const MascotaPropietario = mascotaPropietario(conexion);
 const MascotaObservacion = mascotaObservacion(conexion);
@@ -95,6 +101,7 @@ const Visita = visitaModel(conexion);
 const Visitante = visitanteModel(conexion);
 const Padron = padronModel(conexion);
 const PadronPersona = padronPersonaModel(conexion);
+const PadronPersonaTutor = padronPersonaTutorModel(conexion);
 
 // Definicion de Relaciones entre tablas
 Pagina.belongsTo(Modulo);
@@ -137,11 +144,16 @@ Padron.belongsToMany(Persona, { through: PadronPersona, foreignKey: 'padronId' }
 Padron.hasMany(PadronPersona);
 PadronPersona.belongsTo(Padron);
 Persona.hasMany(PadronPersona);
-PadronPersona.belongsTo(Persona);
+PadronPersona.belongsTo(Persona)
+
+Persona.belongsToMany(Persona, { as: 'tutor', through: PersonaTutor, foreignKey: 'tutorId' });
+Persona.belongsToMany(Persona, { as: 'persona', through: PersonaTutor, foreignKey: 'personaId' });
+
+
 
 module.exports = {
     conexion, Usuario, Pagina, Modulo, UsuarioModulo, UsuarioPagina, TipoDocumento, Asociacion, Comportamiento,
     Mascota, Persona, MascotaComportamiento, MascotaPropietario, MascotaObservacion, Observacion, Autor, Editorial,
     Genero, Libro, LibroBiblioteca, LibroAutor, LibroGenero, Area, Funcionario, AreaFuncionario, AreaJerarquia,
-    Visita, Visitante, Padron, PadronPersona, TipoBeneficiario
+    Visita, Visitante, Padron, PadronPersona, TipoBeneficiario, TipoTutor, PadronPersonaTutor, PersonaTutor
 }
