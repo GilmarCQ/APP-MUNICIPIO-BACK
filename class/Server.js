@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
 const cors = require('cors');
 
 const { conexion } = require('../config/Sequelize');
@@ -27,6 +28,8 @@ const { tipoTutorRouter } = require('../routes/catalogos/TipoTutor');
 
 class Server {
     constructor() {
+
+        dotenv.config();
         this.app = express();
         this.app.use(cors());
         this.puerto = process.env.PORT || 5001;

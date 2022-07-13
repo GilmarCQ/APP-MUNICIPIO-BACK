@@ -12,6 +12,9 @@ const httpOk200NoContent = (res, message) => {
         mensaje: message
     });
 }
+/*
+* content
+* */
 const httpOk200Content = (res, content, message) => {
     res.status(200).json({
         valido: true,
